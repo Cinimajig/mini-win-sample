@@ -27,7 +27,7 @@ const ABOUT_MSG: PCWSTR = w!(r#"Version 1.0
 Created for demonstration purposes.
 
 
-Copyright ©️ LOLOLOL Copr."#);
+Copyright ©️ LOLOLOL Corp."#);
 
 /// The main function only exists for debug builds. We call WinMain here to have intellisense while coding.
 /// Normally WinMain gets it's parameters from Windows on startup.
