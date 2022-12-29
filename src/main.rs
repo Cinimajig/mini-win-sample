@@ -56,14 +56,14 @@ unsafe extern "system" fn wWinMain(
     // Even if we only have one Window, we still need to register it.
     let wc = WNDCLASSEXW {
         cbSize: mem::size_of::<WNDCLASSEXW>() as _, // Size of itself.
-        style: CS_VREDRAW | CS_HREDRAW, // The Window should redraw when the size changes.
-        lpfnWndProc: Some(wnd_proc),    // Our Window Procedure.
-        hInstance: instance,            // Application instance.
-        hIcon: LoadIconW(0, IDI_APPLICATION), // Application Icon (IDI_APPLICATION == Default icon).
-        hCursor: LoadCursorW(0, IDC_ARROW), // What cursor to use (IDC_ARROW == The Arrow).
+        style: CS_VREDRAW | CS_HREDRAW,             // The Window should redraw when the size changes.
+        lpfnWndProc: Some(wnd_proc),                // Our Window Procedure.
+        hInstance: instance,                        // Application instance.
+        hIcon: LoadIconW(0, IDI_APPLICATION),       // Application Icon (IDI_APPLICATION == Default icon).
+        hCursor: LoadCursorW(0, IDC_ARROW),         // What cursor to use (IDC_ARROW == The Arrow).
         hbrBackground: GetStockObject(WHITE_BRUSH), // Background color of the Window (15 == DEFAULT_BRUSH).
-        lpszClassName: w!("MyWindowClass"), // Class name. This should be used with CreateWindow.
-        ..mem::zeroed()                     // Fill the rest with zeroes.
+        lpszClassName: w!("MyWindowClass"),         // Class name. This should be used with CreateWindow.
+        ..mem::zeroed()                             // Fill the rest with zeroes.
     };
 
     // If the class registration fails, we return the Error.
@@ -76,15 +76,15 @@ unsafe extern "system" fn wWinMain(
         0,                          // Extended style flags. We don't use any in this example.
         wc.lpszClassName,           // The class name from earlier.
         w!("Hello Windows sample"), // Window Title.
-        WS_OVERLAPPEDWINDOW, // What kind of style our window is (Caption bar, min-max buttons, thick frame and so forth).
-        CW_USEDEFAULT,       // Let Windows place the window, wherever it likes.
-        CW_USEDEFAULT,       // Let Windows place the window, wherever it likes.
-        800,                 // Width of the window.
-        600,                 // Height of the window.
-        0,                   // Parent window. We don't have any, as this is a toplevel window.
-        create_menu(),       // A Handle to our menu.
-        instance,            // Application instance.
-        ptr::null(), // Pointer to any extra data, we wan't to pass to the Window Procedure. We don't have any.
+        WS_OVERLAPPEDWINDOW,        // What kind of style our window is (Caption bar, min-max buttons, thick frame and so forth).
+        CW_USEDEFAULT,              // Let Windows place the window, wherever it likes.
+        CW_USEDEFAULT,              // Let Windows place the window, wherever it likes.
+        800,                        // Width of the window.
+        600,                        // Height of the window.
+        0,                          // Parent window. We don't have any, as this is a toplevel window.
+        create_menu(),              // A Handle to our menu.
+        instance,                   // Application instance.
+        ptr::null(),                // Pointer to any extra data, we wan't to pass to the Window Procedure. We don't have any.
     );
 
     // If the window creation failed, we return the Error.
@@ -116,8 +116,11 @@ unsafe extern "system" fn wWinMain(
 /// A programmatic way of creating a menu to our window. The function returns a Handle, that we can use.
 /// If the Handle is passed to `CreateWindow`, it will automatically be cleaned-up by Windows.
 unsafe fn create_menu() -> HMENU {
-    let menu = CreateMenu(); // Our "top-level" menu.
-    let file_menu = CreateMenu(); // Our drop-down menu.
+    let menu = CreateMenu();        // Our "top-level" menu.
+    let file_menu = CreateMenu();   // Our drop-down menu.
+
+    // Inserts the item "File" into our main menu. This is the drop-down item.
+    InsertMenuW(menu, IDM_FILE as _, MF_POPUP, file_menu as _, w!("&File"));
 
     // Inserts the item "Exit" into the drop-down menu.
     InsertMenuW(
@@ -127,9 +130,6 @@ unsafe fn create_menu() -> HMENU {
         IDM_EXIT as _, // Id of the menuitem.
         w!("E&xit"),   // The text content. The "&" decides the Alt-hotkey we can use.
     );
-
-    // Inserts the item "File" into our main menu. This is the drop-down item.
-    InsertMenuW(menu, IDM_FILE as _, MF_POPUP, file_menu as _, w!("&File"));
 
     // Inserts the item "About" into the main menu.
     InsertMenuW(
@@ -196,15 +196,15 @@ unsafe extern "system" fn wnd_proc(
             DrawTextW(
                 dc,                                     // Device Context to use.
                 w!("Hello, Windows!") as _,             // Our Text.
-                -1,        // The length of the text. -1 means until a null is encountered.
-                &mut rect, // A mutable reference to our window size.
+                -1,                                     // The length of the text. -1 means until a null is encountered.
+                &mut rect,                              // A mutable reference to our window size.
                 DT_SINGLELINE | DT_VCENTER | DT_CENTER, // Attributes of the text.
             );
 
             // Tells Windows, we are done painting.
             EndPaint(hwnd, &ps);
         }
-        // WM_DESTROY is then our window should be closing. The most important thing is call PostQuitMessage with the value zero.
+        // WM_DESTROY is when our window should be closing. The most important thing is call PostQuitMessage with the value zero.
         // Otherwise, this where most the manual cleanup should happend.
         // This will also make the next message of the Message loop WM_QUIT.
         WM_DESTROY => {
