@@ -110,7 +110,7 @@ unsafe extern "system" fn wWinMain(
         DispatchMessageW(&msg);
     }
 
-    0
+    msg.message as _
 }
 
 /// A programmatic way of creating a menu to our window. The function returns a Handle, that we can use.
@@ -191,6 +191,9 @@ unsafe extern "system" fn wnd_proc(
 
             // Tells the window, it's time to draw. We then recieve a Device Context, we can use it drawing/painting related functions.
             let dc = BeginPaint(hwnd, &mut ps);
+
+            // Removes the white outline of text.
+            SetBkMode(dc, TRANSPARENT);
 
             // Draws som text in the center of the window.
             DrawTextW(
