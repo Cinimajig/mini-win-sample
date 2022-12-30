@@ -55,15 +55,15 @@ unsafe extern "system" fn wWinMain(
     // All Windows have a Window Class. A Window Class is stuff, that is what's common to that type of Window.
     // Even if we only have one Window, we still need to register it.
     let wc = WNDCLASSEXW {
-        cbSize: mem::size_of::<WNDCLASSEXW>() as _, // Size of itself.
-        style: CS_VREDRAW | CS_HREDRAW,             // The Window should redraw when the size changes.
-        lpfnWndProc: Some(wnd_proc),                // Our Window Procedure.
-        hInstance: instance,                        // Application instance.
-        hIcon: LoadIconW(0, IDI_APPLICATION),       // Application Icon (IDI_APPLICATION == Default icon).
-        hCursor: LoadCursorW(0, IDC_ARROW),         // What cursor to use (IDC_ARROW == The Arrow).
-        hbrBackground: GetStockObject(WHITE_BRUSH), // Background color of the Window (15 == DEFAULT_BRUSH).
-        lpszClassName: w!("MyWindowClass"),         // Class name. This should be used with CreateWindow.
-        ..mem::zeroed()                             // Fill the rest with zeroes.
+        cbSize: mem::size_of::<WNDCLASSEXW>() as _,     // Size of itself.
+        style: CS_VREDRAW | CS_HREDRAW,                 // The Window should redraw when the size changes.
+        lpfnWndProc: Some(wnd_proc),                    // Our Window Procedure.
+        hInstance: instance,                            // Application instance.
+        hIcon: LoadIconW(0, IDI_APPLICATION),           // Application Icon (IDI_APPLICATION == Default icon).
+        hCursor: LoadCursorW(0, IDC_ARROW),             // What cursor to use (IDC_ARROW == The Arrow).
+        hbrBackground: (COLOR_WINDOW + 1) as HBRUSH,    // Background color of the Window. The builtin colors should be added with 1.
+        lpszClassName: w!("MyWindowClass"),             // Class name. This should be used with CreateWindow.
+        ..mem::zeroed()                                 // Fill the rest with zeroes.
     };
 
     // If the class registration fails, we return the Error.
@@ -160,7 +160,8 @@ unsafe extern "system" fn wnd_proc(
     match msg {
         // WM_COMMAND is when our menuitems are used. We decide here, what to do with them.
         WM_COMMAND => {
-            // What item was pressed is contained in the wparam variable.
+            // What item was pressed is contained in the wparam variable. Normally we would check the high bits to determen if it's an 
+            // accelerator or control. Since we only have one type in our app, we don't really care.
             match wparam {
                 // The About button, shows info about our application. We use a MessageBox instead of a DialogBox, because it's easier.
                 IDM_ABOUT => {
@@ -175,8 +176,8 @@ unsafe extern "system" fn wnd_proc(
                 IDM_EXIT => {
                     DestroyWindow(hwnd);
                 }
-                // If we for some reason get a WM_COMMAND on an item we dont have, we just ignore it.
-                _ => (),
+                // If we for some reason get a WM_COMMAND on an item we dont have, we just pass it to DefWindowProc.
+                _ => result = DefWindowProcW(hwnd, msg, wparam, lparam),
             };
         }
         // The painting/drawing of the content in window. This happends everytime we told it to do it in the Window Class.
