@@ -36,7 +36,7 @@ Copyright ©️ LOLOLOL Corp."#);
 unsafe extern "system" fn wmain(_argc: i32, argv: PCWSTR) -> i32 {
     use windows_sys::Win32::System::LibraryLoader::*;
 
-    wWinMain(GetModuleHandleW(ptr::null()), 0, argv, SW_SHOWDEFAULT)
+    WinMain(GetModuleHandleW(ptr::null()), 0, argv, SW_SHOWDEFAULT)
 }
 
 /// The "real" main function of a Windows GUI application. It get's its paramenters from Windows on startup.
@@ -44,7 +44,7 @@ unsafe extern "system" fn wmain(_argc: i32, argv: PCWSTR) -> i32 {
 /// Note: `prev_instance` only exists for backwards compatibility reasons. On 32-bit an up it will always be null-pointer
 /// So it should never be used.
 #[no_mangle]
-unsafe extern "system" fn wWinMain(
+unsafe extern "system" fn WinMain(
     instance: HINSTANCE,
     _prev_instance: HINSTANCE,
     _cmdline: PCWSTR,
