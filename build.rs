@@ -7,8 +7,8 @@ fn main() {
 
 fn link_winmain() {
     if cfg!(target_env = "msvc") {
-        println!("cargo:rustc-link-arg-bins=/ENTRY:wWinMainCRTStartup");
+        println!("cargo:rustc-link-arg-bins=/ENTRY:WinMainCRTStartup");
     } else {
-        println!("cargo:rustc-link-arg-bins=-ewWinMainCRTStartup");
+        println!("cargo:rustc-link-arg-bins=-eWinMainCRTStartup");
     }
 }
