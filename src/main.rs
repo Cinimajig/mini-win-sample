@@ -110,7 +110,8 @@ unsafe extern "system" fn WinMain(
         DispatchMessageW(&msg);
     }
 
-    msg.message as _
+    // Returns the WPARAM of the last message (WM_QUIT).
+    msg.wParam as _
 }
 
 /// A programmatic way of creating a menu to our window. The function returns a Handle, that we can use.
